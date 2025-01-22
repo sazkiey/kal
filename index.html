@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Special Message</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #fce4ec, #f8bbd0);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            max-width: 600px;
+            width: 100%;
+            text-align: center;
+            position: relative;
+        }
+
+        input {
+            padding: 12px;
+            width: 80%;
+            max-width: 300px;
+            border: 2px solid #ff4081;
+            border-radius: 8px;
+            margin: 15px 0;
+            font-size: 16px;
+            outline: none;
+        }
+
+        input:focus {
+            border-color: #c51162;
+            box-shadow: 0 0 5px rgba(197, 17, 98, 0.3);
+        }
+
+        button {
+            background: #ff4081;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            margin: 10px;
+        }
+
+        button:hover {
+            background: #c51162;
+            transform: scale(1.05);
+        }
+
+        .cards-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .card {
+            aspect-ratio: 2/3;
+            background: white;
+            border: 2px solid #ff4081;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card:hover {
+            transform: scale(1.05);
+        }
+
+        .card.wrong {
+            animation: shake 0.5s;
+            background: #ffebee;
+            border-color: #f44336;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        .message {
+            white-space: pre-line;
+            text-align: left;
+            line-height: 1.6;
+            padding: 20px;
+            border-radius: 10px;
+            background: #f8f9fa;
+            margin: 20px 0;
+            display: none;
+            font-size: 16px;
+            animation: fadeIn 1s;
+        }
+
+        .success-text {
+            color: #4caf50;
+            font-size: 1.2em;
+            margin: 20px 0;
+            display: none;
+            animation: fadeIn 0.5s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .sticker {
+            width: 150px;
+            margin: 20px auto;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        #musicControl {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+    </style>
+</head>
+<body>
+    <!-- Audio elements -->
+    <audio id="wrongSound" src="https://www.soundjay.com/misc/sounds/fail-buzzer-01.mp3"></audio>
+    <audio id="bgMusic" loop>
+        <source src="give-me-your-forever.mp3" type="audio/mpeg">
+    </audio>
+
+    <div class="container" id="page1">
+        <h1>✨ Special Message ✨</h1>
+        <div class="riddle-box">
+            <h2>Can you answer this?</h2>
+            <p>What special day is May 25th?</p>
+            <input type="text" id="riddleAnswer" placeholder="Your answer...">
+            <button onclick="checkAnswer()">Submit</button>
+        </div>
+    </div>
+
+    <div class="container hidden" id="page2">
+        <h2>Someone sent you a message</h2>
+        <p>Who could it be?</p>
+        <div class="cards-container">
+            <div class="card" onclick="selectCard(1)">
+                <img src="/api/placeholder/200/300" alt="Option 1" style="display: none;">
+            </div>
+            <div class="card" onclick="selectCard(2)">
+                <img src="/api/placeholder/200/300" alt="Option 2" style="display: none;">
+            </div>
+            <div class="card" onclick="selectCard(3)">
+                <img src="/api/placeholder/200/300" alt="Option 3" style="display: none;">
+            </div>
+        </div>
+        <div class="success-text">You're right! It's Key! ✨</div>
+        <button onclick="showMessage()" id="viewMessageBtn" class="hidden">View Message</button>
+        <div class="message"></div>
+        <button onclick="showFinal()" id="nextButton" class="hidden">Next →</button>
+    </div>
+
+    <div class="container hidden" id="page3">
+        <p>Makasi ya udah mau baca, aku cuma mau nyampein ini kamu jangan risih ya..</p>
+        <p>Sehat selalu manusia favoritku.. love u 💕</p>
+        <img src="./img/ikal.jpeg" alt="Cute sticker" class="sticker">
+    </div>
+
+    <script>
+        function checkAnswer() {
+            document.getElementById('page1').classList.add('hidden');
+            document.getElementById('page2').classList.remove('hidden');
+        }
+
+        function selectCard(cardNum) {
+            if (cardNum === 3) {
+                document.querySelector('.cards-container').style.display = 'none';
+                document.querySelector('.success-text').style.display = 'block';
+                document.getElementById('viewMessageBtn').classList.remove('hidden');
+            } else {
+                const card = document.querySelector(`.card:nth-child(${cardNum})`);
+                card.classList.add('wrong');
+                document.getElementById('wrongSound').play();
+                setTimeout(() => card.classList.remove('wrong'), 500);
+            }
+        }
+        function showMessage() {
+    document.getElementById('viewMessageBtn').style.display = 'none';
+    const messageEl = document.querySelector('.message');
+    messageEl.style.display = 'block';
+
+    // Play background music
+    const bgMusic = document.getElementById('bgMusic');
+    bgMusic.play().then(() => {
+        console.log("Background music started.");
+    }).catch((error) => {
+        console.error("Autoplay failed: ", error);
+        alert("Please enable autoplay or tap to allow audio playback.");
+    });
+
+    const message = `hii mas how r u?, everything its okkay right?, mas i just want to tell u i miss u really miss u :(, aku udah gabisa nahan ini tapi aku malu buat ngcht kamu. aku tarik pesan aja ga kamu balas..... pdhl kamu bilang ke aku kalau aku kangen cht kamu gitu kan tp ga dibalas sm kamunya sedih akutu mas kelihatanya baik baik aja gada sedih sedihnya tanpa key :(((((((((((((. mas ga kangen sm key? mas ga kangen di cerewetin sm key? mas ga kangen di cariin sm key? mas ga kangen dibuat marah sm key? mas ga kangen ya.......... pdhl key disini kangen bgt kangen dpt perhatian dri kamu kangen manja sm kamu kangen call sm kamu kangen dimarahin kamu kangen bercanda sm kamu kangen sm suara kamu kangen semua yang ada kamunya :(((. mas masih sayang sama key ngga ya? huhu sedih intiya mas harus baik baik disana gabole kenapa kenapa ya harus sehat selalu bahagia selalu, key sayang haikal selalu selalu, kalau harimu lagi berat ke aku aja ya ... intinya key selalu doain yang terbaik buat mas haikal kesayangan key. i will always love u mas..`;
+
+    let i = 0;
+    function typeWriter() {
+        if (i < message.length) {
+            messageEl.textContent += message.charAt(i);
+            i++;
+            setTimeout(typeWriter, 50);
+        } else {
+            document.getElementById('nextButton').classList.remove('hidden');
+        }
+    }
+    typeWriter();
+}
+
+//js
+bgMusic.oncanplaythrough = () => console.log("Audio file ready to play.");
+
+
+
+        function showFinal() {
+            document.getElementById('page2').classList.add('hidden');
+            document.getElementById('page3').classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>
